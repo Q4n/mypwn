@@ -1,7 +1,6 @@
 # -*- coding:utf-8 -*-
 from pwn import *
 
-
 def run(binary='',aslr=1,DEBUG=1):
     if DEBUG:
         context.log_level = 'debug'
@@ -11,7 +10,7 @@ def run(binary='',aslr=1,DEBUG=1):
         r = process(binary, aslr=aslr)
         libc=elf.libc
 
-def run_remote(ip='',port=0,DEBUG=1):
+def run_remote(ip='',port=0,DEBUG=0):
     if DEBUG:
         context.log_level = 'debug'
     global r
