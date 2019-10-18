@@ -130,18 +130,18 @@ import requests
 class SUBMIT:
     """
     利用requests.post方法来提交flag
+    s=SUBMIT("http://local/submit","mytoken","answer","TOKEN")
+    s.submit("flag")
     """
-    def __init__(self,flag_value,token_value,url,flag_key='answer',token_key='TOKEN'):
-        self.flag_value=flag_value
+    def __init__(self,url,token_value,flag_key='answer',token_key='TOKEN'):
         self.token_value=token_value
         self.url=url
         self.flag_key=flag_key
         self.token_key=token_key    
-        self.data = {self.flag_key: self.flag_value, self.token_key: self.token_value}
-        self.submit()
-    def submit(self):
+    def submit(self,flag_value):
+        self.data = {self.flag_key: flag_value, self.token_key: self.token_value}
         try:   
-            state = requests.post(self.url, data=self.data, timeout=3).text
+            state = requests.post(self.url, data=self.data, timeout=3, verify=False).text
         except requests.Timeout:
             state = 'requests timeout'
         finally:
@@ -149,7 +149,7 @@ class SUBMIT:
             print "--------------------- END ---------------------\n"
 
 class IPLIST:
-    # IPLIST('125-127.100-110.110-120.20-25').result --> List
+    # IPLIST('125-127-100.100-110.110-120.20-25').result --> List
 
     def __init__(self,ip):
         self.result=[]
