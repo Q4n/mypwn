@@ -1,6 +1,23 @@
 # -*- coding:utf-8 -*-
 from pwn import *
 
+class log:
+    """docstring for log"""
+    def __init__(self, s,addr):
+        self.red(s,addr)
+
+    def red(self,s,addr):
+        print('\033[1;31;40m%20s-->0x%x\033[0m'%(s,addr))
+
+    def green(self,s,addr):
+        print('\033[1;32;40m%20s-->0x%x\033[0m'%(s,addr))
+
+    def yellow(self,s,addr):
+        print('\033[1;33;40m%20s-->0x%x\033[0m'%(s,addr)) 
+
+    def blue(self,s,addr):
+        print('\033[1;34;40m%20s-->0x%x\033[0m'%(s,addr))
+
 class PWN:
     """
     :binary  binary_path
