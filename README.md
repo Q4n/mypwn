@@ -3,6 +3,7 @@
 自己用的pwntools
 
 roputils: `https://github.com/inaz2/roputils`
+can use to solve ret2dlresolve
 
 ## PWN
 
@@ -44,12 +45,16 @@ IPLIST("192.168.1-100-2.1").result
 
 传入的参数是一个`remote`的List
 
+perhaps you can exec challenge program for test
+
 #### SUBMMIT
 
 提交flag的类
 
 没写好-。-
 
+#### Fmt
 
+generate fmt payload automatically
 
 

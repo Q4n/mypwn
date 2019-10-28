@@ -8,6 +8,7 @@ keywords = ("pwn"),
 description = "my pwn tools",
 license = "MIT Licence",
 
+url = "https://github.com/Q4n/mypwn",
 author = "Q4n",
 author_email = "907659303@qq.com",
 
