@@ -1,8 +1,8 @@
 # -*- coding:utf-8 -*-
 from pwn import *
 
-class log:
-    """docstring for log
+class Log:
+    """docstring for Log
     just log for num
 
     """
@@ -146,7 +146,11 @@ Notice:
             context(log_level='debug',os='linux',arch=self.elf.arch,aslr=aslr)        
 
 # context.terminal=['tmux','new-window']
-
+class BlindPWN(PWN):
+    """ just connect to remote(2333 """
+    def __init__(self,remote_ip,remote_port):
+        self.run(remote_ip,remote_port)
+        
 import requests
 class SUBMIT:
     """
