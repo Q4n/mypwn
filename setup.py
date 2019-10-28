@@ -15,5 +15,5 @@ author_email = "907659303@qq.com",
 packages = find_packages(),
 include_package_data = True,
 platforms = "any",
-install_requires = []
+install_requires = ["pwntools"]
 )
