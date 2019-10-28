@@ -1,7 +1,7 @@
 import math
 from pwn import *
 
-def Fmt(offset, address,value,flag=1,per_byte='byte',padding_char='\x00',bits=64,full_write=1):
+def Fmt(offset, address,value,flag=1,per_byte='byte',padding_char='\x00',bits=None,full_write=1):
     """Fmt(offset, address,value,flag=1,per_byte='byte',padding_char='\x00',bits=64,full_write=1) --> str
     Arguments:
         offset: fmt string's offset
@@ -18,6 +18,14 @@ def Fmt(offset, address,value,flag=1,per_byte='byte',padding_char='\x00',bits=64
         set context.arch is better
     """
     s2i=lambda x: int(math.log(x,2))
+    if bits==None:
+        if context.arch=='x86':
+            bits=32
+        elif context.arch=='amd64':
+            bits=64
+        else:
+            bits=64
+
     if bits==64:
         arch_num=8
     else:
