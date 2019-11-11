@@ -82,10 +82,11 @@ class PostPWN(threading.Thread):
     def deamon(self):
         print("\033[37mActive ip: \033[32m%s \033[37m"%str([shell.rhost for shell in self.shells]))
         for shell in self.shells:
+            shell.sendline("/bin/sh")
+            shell.recvrepeat(1) #fix recv bugs
             shell.sendline("echo isActive")
             # shell.sendline("bin_name")
-            shell.sendline("/bin/sh")
-            if "isActive" in shell.recv(1024):
+            if "isActive" in shell.recv():
                 continue
             else:
                 self.shells.remove(shell)
@@ -95,11 +96,11 @@ class PostPWN(threading.Thread):
     def get_flag(self):
         flags=[]
         for shell in self.shells:
+            shell.recvrepeat(0.5) #fix recv bugs
             shell.sendline("echo getflag")
             shell.recvuntil("getflag\n")
             shell.sendline("cat flag")
             flags.append(shell.recvline()[:-1])
-            shell.recv(1024)
         return flags
 
     def empty_func_error(self,pad):
