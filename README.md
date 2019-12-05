@@ -17,7 +17,9 @@ sudo pip install q4n
 
 ```python
 from q4n import *
-r=PWN("./pwn",aslr=False, timeout=2)
+r=PWN("./pwn","./libc","./ld",aslr=False, timeout=2)
+# r=BlindPWN(ip, port)
+
 r.proc()
 # r.remote(ip, port)
 
@@ -57,11 +59,9 @@ perhaps you can exec challenge program for test
 
 提交flag的类
 
-没写好-。-
-
 ## payload
 
-#### Fmt
+#### Fmt(Fmt_v2)
 
 generate fmt payload automatically
 

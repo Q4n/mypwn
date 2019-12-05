@@ -7,7 +7,7 @@ class FUCKPASSWD:
     attack=FUCKPASSWD("172.192.168.14-18-2",timeout=2)
     attack.exploit()
     """
-    def __init__(self, ip="192.168.111.14-18-2", port=22,user='wongyohoo', passwd="cz19990403", mypasswd='qazxswedc',timeout=None):
+    def __init__(self, ip="192.168.111.14-18-2", port=22,user='wongyohoo', passwd="cur_pass", mypasswd='qazxswedc',timeout=None):
         if timeout:
             context(log_level='debug',timeout=timeout)
         # 如果知道其他的username和passwd, 批量修改!
