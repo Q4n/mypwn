@@ -20,3 +20,7 @@ class Log:
     @staticmethod
     def blue(s,addr):
         print('\033[1;34;40m%20s-->0x%x\033[0m'%(s,addr))
+    @staticmethod
+    def s(s):
+        print('\033[1;31;40m%s\033[0m'%(s))
+        

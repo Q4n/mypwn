@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 from pwn import *
+from ..misc.Log import Log
 
 class PWN:
     """
@@ -21,14 +22,33 @@ Notice:
     """    
 
     # 调试
-    def debugf(self,breakpoint=""):
+    def debugf(self,breakpoint="",script=''):
         try:
-            log.info("libc: "+hex(self.libc.address))
-            log.info("heap: "+hex(self.heapbase))
-            log.info("stack: "+hex(self.stack))
+            # log.info("libc: "+hex(self.libc.address)) 
+            Log("libc",self.libc.address)       
+        except:
+            pass   
+        try:
+            # log.info("code: "+hex(self.codebase))   
+            Log("code",self.codebase)       
+        except:
+            pass  
+        try:        
+            # log.info("heap: "+hex(self.heapbase))
+            Log("heap",self.heapbase)       
+        except:
+            pass
+        try:
+            # log.info("stack: "+hex(self.stack))
+            Log("stack",self.stack)       
         except:
             pass
         if self.REMOTE == 0:
+            if script:
+                with open("/tmp/gdb_script","w") as f:
+                    f.write(script)
+                breakpoint+='\n'
+                breakpoint+='source /tmp/gdb_script'
             gdb.attach(self.r, breakpoint)
         # pause()
 
@@ -46,6 +66,8 @@ Notice:
             self.r=process(self.binary)
 
     # 各种操作
+    def rn(self,x):
+        return self.r.recvn(x)
     def sd(self,x):
         self.r.send(x)
     def sl(self,x):
@@ -66,20 +88,17 @@ Notice:
         self.r.sendafter(x,y)
     def close(self):
         self.r.close()
-    def getflag(self,getshell=True,check_id=True):
+    def getflag(self,getshell=True):
         if getshell:
-            if check_id:
-                self.sl("id")
-                if "uid" not in self.r.recvuntil("uid",drop=False,timeout=1):
-                    log.error("All ready get shell?")
-                    return
-                self.rl()
+            self.r.recvrepeat(0.5)
+            self.sl("echo getflag")
+            self.ru("getflag\n")
             self.sl("cat flag")
             flag=self.rl()[:-1]
             return flag
         else:
-            pass
-    def exportflag(self,path):
+            Log.s("not implement")
+    def exportflag(self,path="./export_flags"):
         flag=self.getflag()
         with open(path,"a+") as f:
             f.write(flag+'\n')        
@@ -113,6 +132,7 @@ Notice:
 
         self.stack=0
         self.heapbase=0
+        self.codebase=0
 
         if timeout:
             context.timeout=timeout
