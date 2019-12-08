@@ -1,10 +1,12 @@
 # -*- coding:utf-8 -*-
 
 from PWN import *
-
+from ..misc.Log import Log
 class BlindPWN(PWN):
     """ just connect to remote(2333 """
     def __init__(self,remote_ip,remote_port):
+        context.log_level='debug'
+        Log.s("don't forget to se context.arch")
         self.run(remote_ip,remote_port)
     
 """

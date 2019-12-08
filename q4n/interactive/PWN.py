@@ -93,8 +93,8 @@ Notice:
             self.r.recvrepeat(0.5)
             self.sl("echo getflag")
             self.ru("getflag\n")
-            self.sl("cat flag")
-            flag=self.rl()[:-1]
+            self.sl("cat flag && echo getflag")
+            flag=self.ru("getflag")
             return flag
         else:
             Log.s("not implement")
