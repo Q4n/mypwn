@@ -62,6 +62,8 @@ Notice:
             self.r=process([self.ld,self.binary],env={'LD_PRELOAD':self.llibc})            
         elif self.llibc and self.binary:
             self.r=process(self.binary,env={'LD_PRELOAD':self.llibc})
+        elif self.llocal:
+            self.r=process(self.binary,env={"LD_LIBRARY_PATH":"."})
         else:
             self.r=process(self.binary)
 
@@ -118,7 +120,7 @@ Notice:
         except:
             self.libc=self.elf.libc
 
-    def __init__(self,binary,llibc=None,ld=None,aslr=True,timeout=None):
+    def __init__(self,binary,llibc=None,ld=None,aslr=True,llocal=False,timeout=None):
         self.r=None
         self.elf=None
         self.libc=None
@@ -126,6 +128,8 @@ Notice:
         self.binary=binary
         self.llibc=llibc
         self.ld=ld
+
+        self.llocal=llocal
 
         self.REMOTE=0
         # 用于标识是否debug

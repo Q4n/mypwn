@@ -3,9 +3,9 @@ from setuptools import setup, find_packages
 
 setup(
 name = "q4n",
-version = "0.1.4",
+version = "0.1.5",
 keywords = ("pwn"),
-description = "my pwn tools",
+description = "my pwntools",
 license = "MIT Licence",
 
 url = "https://github.com/Q4n/mypwn",
