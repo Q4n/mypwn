@@ -29,7 +29,7 @@ class PostPWN(threading.Thread):
         else:
             self.submit_function=self.empty_func_error
         self.start()
-        # self.main()
+        self.main()
 
     def append(self,shell):
         self.shells.append(shell)
@@ -39,7 +39,7 @@ class PostPWN(threading.Thread):
         while True:
             print("\033[37mWelcome to PostPWN")
             print("[1] auto submit flag")
-            print("[2] submit flag")
+            print("[2] print&submit flag")
             print("[3] get interactive shell")
             print("[4] info active ip")
             choice=0
@@ -87,7 +87,7 @@ class PostPWN(threading.Thread):
                 print("\033[37m[\033[32m+\033[37m] have %d shells in all\n"%len(self.shells))
 
     def deamon(self):
-        print("\033[37mActive ip: \033[32m%s \033[37m"%str([shell.rhost for shell in self.shells]))
+        print("\033[37mActive ip: \033[32m%s \033[37m"%str([shell.rhost+":"+shell.rport for shell in self.shells]))
         for shell in self.shells:
             if not self.crazy:
                 shell.sendline("/bin/sh")

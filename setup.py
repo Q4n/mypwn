@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
 name = "q4n",
-version = "0.1.5",
+version = "0.1.6",
 keywords = ("pwn"),
 description = "my pwntools",
 license = "MIT Licence",
