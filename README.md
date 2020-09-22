@@ -2,6 +2,8 @@
 
 自己用的pwntools
 
+暂时只在python2上测试
+
 roputils: `https://github.com/inaz2/roputils`
 can use to solve ret2dlresolve
 
@@ -58,6 +60,10 @@ perhaps you can exec challenge program for test
 #### SUBMMIT
 
 提交flag的类
+
+#### parse_tcp_stream
+
+tcpstream流量分析（py3脚本，单独放在py3/下）
 
 ## payload
 
