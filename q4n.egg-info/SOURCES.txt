@@ -11,11 +11,13 @@ q4n/awd/IPLIST.py
 q4n/awd/PostPWN.py
 q4n/awd/SUBMIT.py
 q4n/awd/__init__.py
+q4n/awd/tcpdos.py
 q4n/interactive/BlindPWN.py
 q4n/interactive/PWN.py
 q4n/interactive/__init__.py
 q4n/misc/Log.py
 q4n/misc/__init__.py
+q4n/misc/utf8mb4transfer.py
 q4n/payload/FILE.py
 q4n/payload/Fmt.py
 q4n/payload/__init__.py

