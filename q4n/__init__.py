@@ -1,5 +1,4 @@
-# -*- coding:utf-8 -*-
-from misc import *
-from awd import *
-from interactive import *
-from payload import *
+# Promote useful stuff to toplevel
+from __future__ import absolute_import
+
+from q4n.toplevel import *

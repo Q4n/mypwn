@@ -15,5 +15,6 @@ author_email = "907659303@qq.com",
 packages = find_packages(),
 include_package_data = True,
 platforms = "any",
+python_requires='>=3',
 install_requires = ["pwntools","pycrypto","pyshark"]
 )

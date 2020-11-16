@@ -15,4 +15,23 @@ sudo pip install q4n
 
 ## PWN
 
-这个class只是单独的对pwntools进行了简化。。 这样在编写exp的时候不需要编写那么多lambda函数
+simple lib of pwntools
+
+```python
+#!/usr/bin/python3
+from q4n import *
+config = {
+    'REMOTE' : 1,
+    'cmd' : '[/path/to/ld] /path/to/program [args]',
+    'binary' : '/path/to/bin',
+    'lib' : '/path/to/lib1 /path/to/lib2',
+    'libs' : '/directory/to/libs',
+    'target' : 'host port',
+    'aslr' : 1
+}
+r = PWN(info)
+r.sla("ver","nb")
+r.debugf("b *0x1000")
+r.ia()
+```
+
