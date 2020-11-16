@@ -33,5 +33,8 @@ r = PWN(info)
 r.sla("ver","nb")
 r.debugf("b *0x1000")
 r.ia()
+
+
 ```
 
+config_template(): ret a template of config file
