@@ -1,0 +1,12 @@
+Metadata-Version: 1.2
+Name: q4n
+Version: 0.2.1
+Summary: my pwntools
+Home-page: https://github.com/Q4n/mypwn
+Author: Q4n
+Author-email: 907659303@qq.com
+License: MIT Licence
+Description: UNKNOWN
+Keywords: pwn
+Platform: any
+Requires-Python: >=3

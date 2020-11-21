@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
 name = "q4n",
-version = "0.2.0",
+version = "0.2.1",
 keywords = ("pwn"),
 description = "my pwntools",
 license = "MIT Licence",
@@ -16,5 +16,5 @@ packages = find_packages(),
 include_package_data = True,
 platforms = "any",
 python_requires='>=3',
-install_requires = ["pwntools","pycrypto","pyshark"]
+install_requires = ["pwntools","pycrypto"]
 )

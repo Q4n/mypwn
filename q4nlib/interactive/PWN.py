@@ -60,8 +60,8 @@ Notice:
             log.Log("stack",self.stack)       
         except:
             pass
-        if self.config['REMOTE'] == 1:
-            if script:
+        if 'REMOTE' not in self.config or self.config['REMOTE'] == 0:
+            if script != '':
                 with open("/tmp/gdb_script","w") as f:
                     f.write(script)
                 bp+='\n'
@@ -123,7 +123,7 @@ Notice:
         if self.elf == None:
             self.elf = self.ctx.elf
         if len(self.lib)==0:
-            self.lib = self.ctx.libc
+            self.lib = ELF(self.ctx.libc.path)
 
     def _remote(self):
         host, port = self.config['target'].split()
