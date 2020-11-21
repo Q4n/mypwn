@@ -20,7 +20,9 @@ simple lib of pwntools
 
 ## APIs
 
-class PWN()
+### class 
+
+#### PWN()
 
 ```python
 #!/usr/bin/python3
@@ -34,12 +36,20 @@ config = {
     'target' : 'host port', # remote target
     'aslr' : 1 # aslr on/off
 }
-r = PWN(info)
+r = PWN(config)
 r.sla("ver","nb")
 r.debugf("b *0xdeadbeef")
 r.ia()
 ```
 
-function config_template(): ret a template of config file
+#### Log() 
 
-class Log(): print log
+print log
+
+
+### function 
+
+#### config_template(): 
+
+ret a template of config file
+
