@@ -2,10 +2,10 @@
 
 自己用的pwntools
 
-暂时只在python3上测试
+env: python3
 
-roputils: `https://github.com/inaz2/roputils`
-can use to solve ret2dlresolve
+gef + gdb-mutiarch
+https://github.com/Q4n/PwnEnv/tree/master/gdb-with-py3
 
 ## install
 
