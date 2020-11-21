@@ -2,7 +2,7 @@
 
 自己用的pwntools
 
-暂时只在python2上测试
+env: python2
 
 roputils: `https://github.com/inaz2/roputils`
 can use to solve ret2dlresolve
@@ -10,7 +10,8 @@ can use to solve ret2dlresolve
 ## install
 
 ```bash
-sudo pip install q4n
+# 0.1.8 is the latest version with python2
+sudo pip install q4n==0.1.8
 ```
 
 ## PWN
