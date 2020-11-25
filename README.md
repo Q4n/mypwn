@@ -13,6 +13,8 @@ https://github.com/Q4n/PwnEnv/tree/master/gdb-with-py3
 sudo pip install q4n
 ```
 
+or you can find the latest version in `dist` directory
+
 ## PWN
 
 simple lib of pwntools
