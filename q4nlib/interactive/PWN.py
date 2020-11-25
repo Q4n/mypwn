@@ -122,7 +122,7 @@ Notice:
             self.ctx = process(self.config['cmd'].split(),env=self.environ,aslr = aslr)
         if self.elf == None:
             self.elf = self.ctx.elf
-        if len(self.lib)==0:
+        if self.lib == None:
             self.lib = ELF(self.ctx.libc.path)
 
     def _remote(self):
@@ -134,7 +134,7 @@ Notice:
         self.config=config
 
         self.ctx = None
-        self.lib = []
+        self.lib = None
         self.elf = None
         self.environ = {}
 
@@ -154,6 +154,7 @@ Notice:
                 self.lib = ELF(self.config['lib'])
                 context.arch = self.lib.arch
             elif len(lib_list) > 1:
+                self.lib = []
                 for name in lib_list:
                     self.lib.append(ELF(name))
                 context.arch = self.lib[0].arch
