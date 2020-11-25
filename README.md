@@ -53,3 +53,13 @@ print log
 
 ret a template of config file
 
+#### packutf8
+
+ascii to utf8
+
+then you can use fgetws to write to memory
+
+#### debug_print_mbs
+
+print debug log message in `packutf8`
+
