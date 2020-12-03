@@ -106,8 +106,10 @@ def autopack(raw4):
     else:
         raise Exception("range >= 0x80000000", hex(t))
 def packutf8(raw,pad = b'\x00'):
-    """ pack utf8 
+    """ packutf8(raw,pad = b'\x00')
     raw: muti bytes(ascii) -> bytes
+    pad: ljust char
+
     ret: packed bytes(utf8 packed) -> bytes
     """
     result = b''
@@ -119,6 +121,10 @@ def packutf8(raw,pad = b'\x00'):
     return result 
 
 def debug_print_mbs(raw):
+    ''' debug_print_mbs(raw)
+    raw: bytes
+    no return
+    '''
     result = []
     for i in range(0,len(raw),4):
         if i+4>len(raw):

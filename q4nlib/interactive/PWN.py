@@ -1,175 +1,102 @@
 # -*- coding:utf-8 -*-
 from pwn import *
 from q4nlib.misc import log
+from q4nlib.misc import color
 
-def config_template():
-    ''''''
-    config = {
-    'REMOTE' : 0,
-    'cmd' : '[/path/to/ld] /path/to/program [args]',
-    'binary' : '/path/to/bin',
-    'lib' : '/path/to/lib1 /path/to/lib2',
-    'libs' : '/directory/to/libs',
-    'target' : 'host port',
-    'aslr' : 1
-    }
-    return config
+from pwnlib.tubes.sock import sock
+from pwnlib import gdb
+from q4nlib.misc import q4nctx
 
-class PWN:
-    """
-    from q4n import *
-    config = {
-        'REMOTE' : 1,
-        'cmd' : '[/path/to/ld] /path/to/program [args]',
-        'binary' : '/path/to/bin',
-        'lib' : '/path/to/lib1 /path/to/lib2',
-        'libs' : '/directory/to/libs',
-        'target' : 'host port',
-        'aslr' : 1
-    }
-    r = PWN(info)
-    r.ia()
+tube.sd = tube.send
+tube.sl = tube.sendline
+tube.sa = tube.sendafter
+tube.sla = tube.sendlineafter
+tube.rv = tube.recv
+tube.rn = tube.recvn
+tube.ru = tube.recvuntil
+tube.rl = tube.recvline
+tube.ra = tube.recvall
+tube.rr = tube.recvregex
+tube.rp = tube.recvrepeat
+tube.ia = tube.interactive
 
-Notice:
-    假如加载多个函数库，那么libc将加载系统libc
-    """    
-    # 调试
-    def debugf(self,bp="",script='', sp = 0):
-        '''
-        bp: breakpoint
-        script:
-            " define xxx
-            ...
-            end "
-        sp:
-            1: gdb.attach fail
-        '''
-        try:
-            log.Log("libc",self.lib.address)       
-        except:
-            pass   
-        try:
-            log.Log("code",self.codebase)       
-        except:
-            pass  
-        try:        
-            log.Log("heap",self.heapbase)       
-        except:
-            pass
-        try:
-            log.Log("stack",self.stack)       
-        except:
-            pass
-        if 'REMOTE' not in self.config or self.config['REMOTE'] == 0:
-            if script != '':
-                with open("/tmp/gdb_script","w") as f:
-                    f.write(script)
-                bp+='\n'
-                bp+='source /tmp/gdb_script'
-            if sp:
-                # ubuntu desktop
-                os.system("gnome-terminal -e \'gdb -p "+ str(self.ctx.pid)+'\'')
-                pause()
-            else:
-                gdb.attach(self.ctx, bp)
-        # pause()
+def try_log():
+    try:
+        log.Log("ctx.libc.address",q4nctx.libc.address)       
+    except:
+        pass   
+    try:
+        log.Log("ctx.binary.address",q4nctx.binary.address)       
+    except:
+        pass   
+    try:
+        log.Log("ctx.code",q4nctx.code)       
+    except:
+        pass  
+    try:        
+        log.Log("ctx.heap",q4nctx.heap)       
+    except:
+        pass
+    try:
+        log.Log("ctx.stack",q4nctx.stack)       
+    except:
+        pass
 
-    def rn(self,x):
-        return self.ctx.recvn(x)
-    def sd(self,x):
-        self.ctx.send(x)
-    def sl(self,x):
-        self.ctx.sendline(x)    
-    def rv(self,x=4096):
-        return self.ctx.recv(x)
-    def ru(self,x='',drop=True):
-        return self.ctx.recvuntil(str(x),drop=drop)
-    def rl(self,):
-        return self.ctx.recvline()
-    def ia(self,):
-        self.ctx.interactive()
-    def ra(self,):
-        return self.ctx.recvall()
-    def sla(self,x,y):
-        self.ctx.sendlineafter(x,y)
-    def sa(self,x,y):
-        self.ctx.sendafter(x,y)
-    def close(self):
-        self.ctx.close()
-    def getflag(self):
-        self.ctx.recvrepeat(0.5)
-        self.sl(b"echo getflag")
-        self.ru(b"getflag\n")
-        self.sl(b"cat flag && echo getflag")
-        flag=self.ru(b"getflag")
-        return flag
+def sock_dbg(self,script = '', sp = 0):
+    try_log()
+def process_dbg(self, script = '', sp = 0):
+    try_log()
+    if sp == 0:
+        gdb.attach(self, script)
+    else:
+        with open("/tmp/gdb_script","w") as f:
+            f.write(script)
+        os.system("gnome-terminal -e \'gdb -p "+ str(self.pid)+" --command=/tmp/gdb_script"+'\'')
+        pause()
 
-    def exportflag(self,path="./export_flags"):
-        ''' path: file_path '''
-        flag=self.getflag()
-        with open(path,"a+") as f:
-            f.write(flag+'\n')        
+sock.dbg = sock_dbg
+process.dbg = process_dbg
 
-    def _local(self):
-        if 'aslr' in self.config:
-            aslr = self.config['aslr']
+def ENV(cmdline = '' , libpath = '', ldpath = '',log_level='debug'):
+    ''' ENV(cmdline = '' , libpath = '', ldpath = '',log_level='debug'):  init local pwn environ
+    cmdline: your process 
+    libpath: .so path or directory
+    ldpath: ld.so path
+
+    return: (packed_cmdline:list, env: dict)
+    
+    example:
+        # context.terminal=['tmux','new-window']
+        cmd,environ = ENV('/bin/sh')
+        r = process(cmd,env=environ)
+    '''
+    # default use arch amd64
+    context(log_level=log_level,os='linux',arch = "amd64")
+    env = dict()
+
+    cmdlist = list()
+    if cmdline:
+        cmdlist = cmdline.split()
+        if '.sh' not in cmdlist[0]:
+            q4nctx.binary = ELF(cmdlist[0])
+            context.binary = cmdlist[0]
+
+    if libpath:
+        if os.path.isdir(libpath):
+            env['LD_LIBRARY_PATH'] = libpath
+        elif os.path.isfile(libpath):
+            env['LD_PRELOAD'] = libpath
+            q4nctx.libc = ELF(libpath)
+            context.arch = q4nctx.libc.arch
         else:
-            aslr = True
+            raise Exception(color("err `libpath` in ENV",'red'))
+    elif q4nctx.binary:
+        q4nctx.libc = q4nctx.binary.libc
 
-        if len(self.environ) == 0:
-            self.ctx = process(self.config['cmd'].split(),aslr = aslr)
+    if ldpath:
+        if os.path.isfile(libpath):
+            cmdlist.insert(0,ldpath)
         else:
-            self.ctx = process(self.config['cmd'].split(),env=self.environ,aslr = aslr)
-        if self.elf == None:
-            self.elf = self.ctx.elf
-        if self.lib == None:
-            self.lib = ELF(self.ctx.libc.path)
-
-    def _remote(self):
-        host, port = self.config['target'].split()
-        self.ctx = remote(host,port)
-
-    def __init__(self,config):
-        ''' config: dict ''' 
-        self.config=config
-
-        self.ctx = None
-        self.lib = None
-        self.elf = None
-        self.environ = {}
-
-        self.stack=0
-        self.heapbase=0
-        self.codebase=0
-        context(log_level='debug',os='linux')
-
-        if 'libs' in self.config:
-            self.environ['LD_LIBRARY_PATH'] = self.config['libs']
-
-
-        if 'lib' in self.config:
-            self.environ['LD_PRELOAD'] = self.config['lib']
-            lib_list = self.config['lib'].split()
-            if len(lib_list) == 1:
-                self.lib = ELF(self.config['lib'])
-                context.arch = self.lib.arch
-            elif len(lib_list) > 1:
-                self.lib = []
-                for name in lib_list:
-                    self.lib.append(ELF(name))
-                context.arch = self.lib[0].arch
-        
-        if 'binary' in self.config:
-            self.elf = ELF(self.config['binary'])
-            context.binary = self.config['binary']
-
-        if 'REMOTE' in self.config:
-            if self.config['REMOTE'] == 0:
-                self._local()
-            else:
-                self._remote()
-        else:
-            self._local()
-
-
-# context.terminal=['tmux','new-window']
+            raise Exception(color("err `ldpath` in ENV",'red'))
+    
+    return (cmdlist, env)

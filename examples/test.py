@@ -1,13 +1,12 @@
-#!/usr/bin/python3
 from q4n import *
-config = {
-    'REMOTE' : 0, 
-    'cmd' : './bf',
-    'binary': 'bf',
-    'target': '127.0.0.1 9999'
-
-}
-r = PWN(config)
-r.debugf("bo 0x1000")
-
+debug = 1
+cmd, env = ENV("./chunk")
+if debug:
+    r = process(cmd,env=env,aslr=0) #local
+else:
+    r = remote('8.8.8.8',8888) #remote
+ctx.libc # get ELF(libc)
+ctx.binary # get ELF(binary)
+r.sla("index",str(1)) #alias sendlineafter
+r.dbg("b *0xdeadbeef") # log ctx ; run debugger
 r.ia()
