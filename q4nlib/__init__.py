@@ -4,7 +4,9 @@ from __future__ import absolute_import
 import importlib
 __all__ = [
     'misc',
-    'interactive'
+    'interactive',
+    'payload',
+    'exploit'
 ]
 
 for module in __all__:
